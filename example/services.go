@@ -29,12 +29,12 @@ import (
 
 func getLatestPublicNotes(ctx context.Context, db app.Database) (notes []vocab.Type, err error) {
 	return getNotes(ctx, db, `WITH local_notes AS(
-  SELECT payload, create_time FROM %[1]slocal_data
+  SELECT payload, create_time FROM local_data
   WHERE payload->>'type' = 'Note' AND (
     payload->'to' ? 'https://www.w3.org/ns/activitystreams#Public'
     OR payload->'cc' ? 'https://www.w3.org/ns/activitystreams#Public')
 ), fed_notes AS (
-  SELECT payload, create_time FROM %[1]sfed_data
+  SELECT payload, create_time FROM fed_data
   WHERE payload->>'type' = 'Note' AND (
     payload->'to' ? 'https://www.w3.org/ns/activitystreams#Public'
     OR payload->'cc' ? 'https://www.w3.org/ns/activitystreams#Public')
@@ -56,7 +56,7 @@ LIMIT 10`)
 
 func getLatestNotesAndMyPrivateNotes(ctx context.Context, db app.Database, userIRI string) (notes []vocab.Type, err error) {
 	return getNotes(ctx, db, `WITH local_notes AS(
-  SELECT payload, create_time FROM %[1]slocal_data
+  SELECT payload, create_time FROM local_data
   WHERE payload->>'type' = 'Note' AND (
     payload->'to' ? 'https://www.w3.org/ns/activitystreams#Public'
     OR payload->'cc' ? 'https://www.w3.org/ns/activitystreams#Public'
@@ -64,7 +64,7 @@ func getLatestNotesAndMyPrivateNotes(ctx context.Context, db app.Database, userI
     OR payload->'to' ? $1
     OR payload->'cc' ? $1)
 ), fed_notes AS (
-  SELECT payload, create_time FROM %[1]sfed_data
+  SELECT payload, create_time FROM fed_data
   WHERE payload->>'type' = 'Note' AND (
     payload->'to' ? 'https://www.w3.org/ns/activitystreams#Public'
     OR payload->'cc' ? 'https://www.w3.org/ns/activitystreams#Public'
@@ -124,7 +124,7 @@ func getUsers(ctx context.Context, db app.Database) (ppl []vocab.Type, err error
 		return
 	}
 	txb := db.Begin()
-	txb.Query(`SELECT actor FROM %[1]susers
+	txb.Query(`SELECT actor FROM users
 WHERE actor->>'type' = 'Person'
 ORDER BY create_time DESC`,
 		func(r app.SingleRow) error {
@@ -141,7 +141,7 @@ ORDER BY create_time DESC`,
 func getNoteIsReadable(ctx context.Context, db app.Database, noteID, userID *url.URL) (legible /*lol*/ bool, err error) {
 	txb := db.Begin()
 	txb.Query(`SELECT EXISTS (
-SELECT create_time FROM %[1]slocal_data
+SELECT create_time FROM local_data
 WHERE payload->>'type' = 'Note' AND (
   payload->'to' ? 'https://www.w3.org/ns/activitystreams#Public'
   OR payload->'cc' ? 'https://www.w3.org/ns/activitystreams#Public'
@@ -160,7 +160,7 @@ WHERE payload->>'type' = 'Note' AND (
 func getNoteIsPublic(ctx context.Context, db app.Database, noteID *url.URL) (pub bool, err error) {
 	txb := db.Begin()
 	txb.Query(`SELECT EXISTS (
-SELECT create_time FROM %[1]slocal_data
+SELECT create_time FROM local_data
 WHERE payload->>'type' = 'Note' AND (
   payload->'to' ? 'https://www.w3.org/ns/activitystreams#Public'
   OR payload->'cc' ? 'https://www.w3.org/ns/activitystreams#Public')

@@ -5,7 +5,9 @@
 		<li><a href="{{.Href}}">{{.Name}}</a></li>
 		{{end}}
 		{{if .User}}
-		<li><a href="/notes/create">create</a></li>
+		<li><a href="/followers/requests">followers requests</a></li>
+		<li><a href="/following/create">create following</a></li>
+		<li><a href="/notes/create">create note</a></li>
 		<li><a href="/logout">logout</a></li>
 		<p>Hi, {{.User}}!</p>
 		{{else}}

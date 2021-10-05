@@ -1,7 +1,7 @@
 {{template "header.tmpl" .}}
 <h1>Following</h1>
 <ul>
-{{if isString .Other.items}}
+{{if .Other.items}}
 	<tr>
 		<td><a href="{{.Other.items}}">{{.Other.items}}</a></td>
 	</tr>

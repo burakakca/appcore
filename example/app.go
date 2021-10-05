@@ -288,6 +288,7 @@ func (a *App) BuildRoutes(r app.Router, db app.Database, f app.Framework) error 
 	//
 	//     /.well-known/host-meta
 	//     /.well-known/webfinger
+	//     https://5a88-31-223-51-97.ngrok.io/.well-known/webfinger?resource=acct:burakk@5a88-31-223-51-97.ngrok.io
 	//
 	// And supports using Webfinger to find actors on this server.
 	//
@@ -791,8 +792,11 @@ func (a *App) ApplyFederatingCallbacks(fwc *pub.FederatingWrappedCallbacks) (oth
 	//
 	// The additional behavior of our application is to print out the
 	// Create activity to Stdout.
+	// fmt.Println("------>ApplyFederatingCallbacks")
 	fwc.Create = func(c context.Context, create vocab.ActivityStreamsCreate) error {
+		fmt.Print("---<>1<>---")
 		fmt.Println(streams.Serialize(create))
+		fmt.Print("---<>1<>---")
 		return nil
 	}
 	// Here we add new behavior to our application.
@@ -800,7 +804,9 @@ func (a *App) ApplyFederatingCallbacks(fwc *pub.FederatingWrappedCallbacks) (oth
 	// The new behavior is to print out Listen activities to Stdout.
 	others = []interface{}{
 		func(c context.Context, listen vocab.ActivityStreamsListen) error {
+			fmt.Print("---<>2<>---")
 			fmt.Println(streams.Serialize(listen))
+			fmt.Print("---<>2<>---")
 			return nil
 		},
 	}
@@ -814,13 +820,19 @@ func (a *App) ApplySocialCallbacks(swc *pub.SocialWrappedCallbacks) (others []in
 	// requests.
 	//
 	// The new behavior is to print out Accept & reject activities to Stdout.
+	// fmt.Println("----->ApplySocialCallbacks")
+
 	others = []interface{}{
 		func(c context.Context, accept vocab.ActivityStreamsAccept) error {
+			fmt.Print("---<>3<>---")
 			fmt.Println(streams.Serialize(accept))
+			fmt.Print("---<>3<>---")
 			return nil
 		},
 		func(c context.Context, reject vocab.ActivityStreamsReject) error {
+			fmt.Print("---<>4<>---")
 			fmt.Println(streams.Serialize(reject))
+			fmt.Print("---<>4<>---")
 			return nil
 		},
 	}
@@ -935,6 +947,7 @@ func (a *App) getSessionWriteTemplateHelper(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	w.WriteHeader(code)
+	fmt.Println("---->>>>",a.getTemplateData(s, data))
 	err = a.templates.ExecuteTemplate(w, tmpl, a.getTemplateData(s, data))
 	if err != nil {
 		util.ErrorLogger.Errorf("Error serving %s: %v", debug, err)

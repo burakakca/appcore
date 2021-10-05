@@ -1,0 +1,10 @@
+authtoken: 1xDjoGpzUiNp0wDF0hiOjMOzZrJ_5kTfjVXBm5iCodw23D85e
+tunnels:
+  server1:
+    addr: 443
+    proto: http
+    bind-tls: true
+  server2:
+    addr: 444
+    proto: http
+    bind-tls: true
